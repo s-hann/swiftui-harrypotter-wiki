@@ -7,9 +7,9 @@
 
 enum AppRoute: Hashable {
     case books, characters, movies, potions, spells
-    case bookDetails(bookId: Book)
-    case characterDetails(characterId: Character)
-    case movieDetails(movieId: Movie)
-    case potionDetails(potionId: String)
-    case spellDetails(spellId: String)
+    case bookDetails(book: Book)
+    case characterDetails(character: Character)
+    case movieDetails(movie: Movie)
+    case potionDetails(potion: Potion)
+    case spellDetails(spell: Spell)
 }

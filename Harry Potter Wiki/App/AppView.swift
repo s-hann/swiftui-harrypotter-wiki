@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AppView: View {
     @State private var router: Router = .init()
-    
+
     var body: some View {
         NavigationStack(path: $router.path) {
             HomeView()
@@ -23,6 +23,12 @@ struct AppView: View {
                         CharacterListView()
                     case .movies:
                         MovieListView()
+                    case .potions:
+                        PotionListView()
+                    case .spells:
+                        SpellListView()
+                    case .spellDetails(let spell):
+                        SpellDetailView(spell: spell)
                     default:
                         Text("Not Implemented")
                     }

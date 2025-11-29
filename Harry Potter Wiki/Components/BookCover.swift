@@ -13,7 +13,7 @@ struct BookGrid: View {
 
     var body: some View {
         Button(action: {
-            router.navigateTo(route: .bookDetails(bookId: book))
+            router.navigateTo(route: .bookDetails(book: book))
         }) {
             VStack(alignment: .leading, spacing: 8) {
                 BookCover(book: book)
