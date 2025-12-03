@@ -35,6 +35,11 @@ struct BookService {
         return (books, response.meta?.pagination)
     }
 
+    func fetchFeaturedBooks() async throws -> [Book] {
+        let (books, _) = try await fetchBooks(page: 1)
+        return Array(books.prefix(3))
+    }
+
     func fetchBookDetail(id: String) async throws -> Book {
         let response: APISingleResponse<BookAttributes> =
             try await APIClient.fetch(path: "books/\(id)")

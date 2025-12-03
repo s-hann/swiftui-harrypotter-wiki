@@ -8,38 +8,31 @@
 import SwiftUI
 
 struct CharacterListView: View {
+    @Environment(Router.self) private var router
     @State private var vm: CharacterViewModel = .init()
 
     var body: some View {
-        ScrollView {
-            Group {
-                switch vm.listState {
-                case .idle:
-                    Color.clear
-                case .loading:
-                    ProgressView("Loading...")
-                case .success(let characters):
+        Group {
+            switch vm.listState {
+            case .idle:
+                Color.clear
+            case .loading:
+                ProgressView("Loading...")
+            case .success(let characters):
+                ScrollView {
                     LazyVStack(spacing: 16) {
                         ForEach(characters) { character in
-                            HStack(spacing: 12) {
-                                Rectangle()
-                                    .frame(width: 100, height: 100)
-                                VStack(alignment: .leading) {
-                                    Text(character.name)
-                                        .font(.headline)
-                                        .frame(
-                                            maxWidth: .infinity,
-                                            alignment: .leading
+                            ListItemView(
+                                title: character.name,
+                                image: character.image,
+                                action: {
+                                    router.navigateTo(
+                                        route: .characterDetails(
+                                            character: character
                                         )
+                                    )
                                 }
-                            }
-                            .fixedSize(horizontal: false, vertical: true)
-                            .background(.secondary.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(.secondary, lineWidth: 0.2)
-                            }
+                            )
                         }
                         Color.clear
                             .frame(height: 20)
@@ -51,15 +44,15 @@ struct CharacterListView: View {
                             ProgressView().padding()
                         }
                     }
-                case .failure(let message):
-                    ContentUnavailableView(
-                        "Error",
-                        systemImage: "xmark",
-                        description: Text(message)
-                    )
+                    .padding(.horizontal)
                 }
+            case .failure(let message):
+                ContentUnavailableView(
+                    "Error",
+                    systemImage: "xmark",
+                    description: Text(message)
+                )
             }
-            .padding(.horizontal)
         }
         .navigationTitle(Text("Character List"))
         .task {

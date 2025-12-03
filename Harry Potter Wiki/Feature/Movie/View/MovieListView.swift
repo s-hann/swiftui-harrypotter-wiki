@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MovieListView: View {
+    @Environment(Router.self) private var router
     @State private var vm: MovieViewModel = .init()
 
     private let columns = [
@@ -26,7 +27,15 @@ struct MovieListView: View {
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 20) {
                         ForEach(movies) { movie in
-                            MoviePosterView(movie: movie)
+                            GridItemView(
+                                title: movie.title,
+                                image: movie.poster,
+                                action: {
+                                    router.navigateTo(
+                                        route: .movieDetails(movie: movie)
+                                    )
+                                }
+                            )
                         }
                         Color.clear
                             .frame(height: 20)
@@ -53,32 +62,6 @@ struct MovieListView: View {
         .task {
             if case .idle = vm.listState {
                 await vm.loadMovies()
-            }
-        }
-    }
-}
-
-struct MoviePosterView: View {
-    let movie: Movie
-
-    var body: some View {
-        VStack(alignment: .leading) {
-            AsyncImage(url: movie.poster) { img in
-                img.resizable().scaledToFill()
-            } placeholder: {
-                Color.gray.opacity(0.3)
-            }
-            .clipped()
-            .cornerRadius(8)
-
-            Text(movie.title)
-                .font(.headline)
-                .lineLimit(2)
-                .multilineTextAlignment(.leading)
-
-            if let date = movie.releaseDate {
-                Text(date)
-                    .foregroundStyle(.secondary)
             }
         }
     }

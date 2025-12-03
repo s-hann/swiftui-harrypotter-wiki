@@ -21,16 +21,22 @@ struct AppView: View {
                         BookDetailView(book: book)
                     case .characters:
                         CharacterListView()
+                    case .characterDetails(let character):
+                        CharacterDetailView(character: character)
                     case .movies:
                         MovieListView()
+                    case .movieDetails(let movie):
+                        MovieDetailView(movie: movie)
                     case .potions:
                         PotionListView()
+                    case .potionDetails(let potion):
+                        PotionDetailView(potion: potion)
                     case .spells:
                         SpellListView()
                     case .spellDetails(let spell):
                         SpellDetailView(spell: spell)
-                    default:
-                        Text("Not Implemented")
+//                    default:
+//                        Text("Not Implemented")
                     }
                 }
         }

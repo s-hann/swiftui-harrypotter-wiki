@@ -15,7 +15,7 @@ struct BookDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                BookCover(book: book)
+                PortraitImage(image: book.cover)
                     .frame(width: 200)
                 VStack(alignment: .leading, spacing: 8) {
                     Text(book.title)
@@ -62,7 +62,7 @@ struct BookDetailView: View {
                             .padding(.top)
                         case .failure(let message):
                             ContentUnavailableView(
-                                "Error",
+                                "Failed to get book chapters.",
                                 systemImage: "xmark",
                                 description: Text(message)
                             )

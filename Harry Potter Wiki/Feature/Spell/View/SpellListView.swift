@@ -7,55 +7,9 @@
 
 import SwiftUI
 
-struct SpellGrid: View {
-    @Environment(Router.self) private var router
-    let spell: Spell
-
-    var body: some View {
-        Button(action: {
-            router.navigateTo(route: .spellDetails(spell: spell))
-        }) {
-            VStack(alignment: .leading, spacing: 8) {
-                SpellImage(spell: spell)
-                Text(spell.name)
-                    .font(.headline)
-                    .lineLimit(2)
-            }
-        }
-    }
-}
-
-struct SpellImage: View {
-    let spell: Spell
-
-    var body: some View {
-        Color.clear
-            .aspectRatio(1, contentMode: .fit)
-            .background(.secondary.opacity(0.2))
-            .overlay {
-                if let image = spell.image {
-                    AsyncImage(url: image) { img in
-                        img.resizable().scaledToFill()
-                    } placeholder: {
-                        Color.gray.opacity(0.3)
-                    }
-                } else {
-                    Image(systemName: "wand.and.stars")
-                        .font(.system(size: 32))
-                        .foregroundColor(.secondary)
-                }
-            }
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-    }
-}
-
 struct SpellListView: View {
+    @Environment(Router.self) private var router
     @State private var vm = SpellViewModel()
-
-    private let columns = [
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12),
-    ]
 
     var body: some View {
         Group {
@@ -66,9 +20,17 @@ struct SpellListView: View {
                 ProgressView("Loading...")
             case .success(let spells):
                 ScrollView {
-                    LazyVGrid(columns: columns, spacing: 20) {
+                    LazyVStack(spacing: 20) {
                         ForEach(spells) { spell in
-                            SpellGrid(spell: spell)
+                            ListItemView(
+                                title: spell.name,
+                                image: spell.image,
+                                action: {
+                                    router.navigateTo(
+                                        route: .spellDetails(spell: spell)
+                                    )
+                                }
+                            )
                         }
                         Color.clear.frame(height: 40)
                             .onAppear {
@@ -106,12 +68,14 @@ struct SpellDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                SpellImage(spell: spell)
+                SquareImage(image: spell.image)
                     .frame(width: 200)
                 VStack(alignment: .leading, spacing: 8) {
                     Text(spell.name)
                         .font(.title2.bold())
-                    if let incantation = spell.incantation { Text("Incantation: \(incantation)") }
+                    if let incantation = spell.incantation {
+                        Text("Incantation: \(incantation)")
+                    }
                     if let effect = spell.effect { Text(effect) }
                     if let light = spell.light { Text("Light: \(light)") }
                 }

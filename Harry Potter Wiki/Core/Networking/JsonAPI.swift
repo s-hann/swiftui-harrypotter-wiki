@@ -41,3 +41,30 @@ struct Links: Codable {
         case next, prev, selfLink = "self"
     }
 }
+
+// ERROR Endpoint
+struct APIErrorResponse: Decodable {
+    let errors: [APIErrorDetail]
+}
+
+struct APIErrorDetail: Decodable {
+    let status: String?
+    let title: String?
+    let detail: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case status, title, detail
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        title = try container.decodeIfPresent(String.self, forKey: .title)
+        detail = try container.decodeIfPresent(String.self, forKey: .detail)
+        
+        if let intStatus = try? container.decode(Int.self, forKey: .status) {
+            status = String(intStatus)
+        } else {
+            status = try container.decodeIfPresent(String.self, forKey: .status)
+        }
+    }
+}

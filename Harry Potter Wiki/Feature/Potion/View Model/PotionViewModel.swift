@@ -24,10 +24,13 @@ class PotionViewModel {
         self.currentPage = 1
 
         do {
+            print("vm 1")
             let (potions, pagination) = try await service.fetchPotions(page: 1)
             self.totalRecords = pagination?.records ?? 0
+            print("vm 2")
             self.listState = .success(potions)
         } catch {
+            print("vm 3 \(error)")
             self.listState = .failure(error.localizedDescription)
         }
     }

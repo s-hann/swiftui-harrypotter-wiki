@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(Router.self) private var router
+    @State private var vm: HomeViewModel = .init()
+
     private let columns = [
         GridItem(.flexible(), spacing: 12),
         GridItem(.flexible(), spacing: 12),
@@ -32,17 +35,43 @@ struct HomeView: View {
                 Text("Top picks for you")
                     .font(.title3)
                     .padding([.horizontal, .top])
-                LazyVGrid(columns: columns, spacing: 20) {
-                    ForEach(0..<10) { _ in
-                        BookGrid(book: Book.dummyBook)
+                switch vm.listState {
+                case .idle:
+                    Color.clear
+                case .loading:
+                    ProgressView()
+                case .success(let books):
+                    LazyVGrid(columns: columns, spacing: 20) {
+                        ForEach(books) { book in
+                            GridItemView(
+                                title: book.title,
+                                image: book.cover,
+                                action: {
+                                    router.navigateTo(
+                                        route: .bookDetails(book: book)
+                                    )
+                                }
+                            )
+                        }
                     }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal)
+                case .failure(let message):
+                    ContentUnavailableView(
+                        "Error",
+                        systemImage: "xmark",
+                        description: Text(message)
+                    )
                 }
-                .buttonStyle(.plain)
-                .padding(.horizontal)
             }
         }
         .navigationTitle(Text("Harry Potter Wiki"))
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            if case .idle = vm.listState {
+                await vm.loadBooks()
+            }
+        }
     }
 }
 

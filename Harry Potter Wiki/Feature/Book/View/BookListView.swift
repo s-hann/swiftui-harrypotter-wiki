@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct BookListView: View {
+    @Environment(Router.self) private var router
     @State private var vm = BookViewModel()
 
     private let columns = [
@@ -26,7 +27,15 @@ struct BookListView: View {
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 20) {
                         ForEach(books) { book in
-                            BookGrid(book: book)
+                            GridItemView(
+                                title: book.title,
+                                image: book.cover,
+                                action: {
+                                    router.navigateTo(
+                                        route: .bookDetails(book: book)
+                                    )
+                                }
+                            )
                         }
                         Color.clear.frame(height: 40)
                             .onAppear {
